@@ -1,0 +1,117 @@
+Java 高频 50 道面试题 + 标准答案
+一、Java 基础（15 题）
+JDK、JRE、JVM 区别
+JVM：Java 虚拟机，负责解析 class、跨平台运行；
+JRE=JVM + 运行时类库，只运行程序；
+JDK=JRE + 编译工具 (javac)、开发工具，用于开发。
+== 与 equals、hashCode
+==：基本类型比数值，引用类型比地址；
+equals 默认同 ==，String 重写后比较内容；
+hashCode：返回对象哈希值；equals 相等必须 hashCode 相等，hash 相等 equals 不一定相等。
+String / StringBuilder / StringBuffer
+String：常量不可变，底层 char 数组 (JDK9 byte [])，拼接产生新对象；
+StringBuffer：方法加 synchronized，线程安全、效率低；
+StringBuilder：无同步锁，线程不安全、效率高；日常拼接优先 StringBuilder。
+final 作用
+final 类：不能被继承；
+final 方法：不能重写；
+final 基本变量：值不可改；引用变量：地址不可改，内部内容可变。
+8 大基本类型 + Integer 缓存
+byte/short/int/long/float/double/char/boolean；
+Integer 缓存池-128~127，区间内复用对象，超出 new Integer。
+int 与 Integer
+int 基本数据类型，默认 0；Integer 包装类，默认 null；自动装箱Integer.valueOf()、拆箱intValue()。
+重载 & 重写
+重载：同类，方法名同、参数列表不同，与返回值无关；
+重写：父子类，方法名、参数、返回值一致；子类权限≥父类，抛出异常不能更大。
+抽象类 & 接口
+抽象类 abstract class：有构造方法、成员变量、普通方法 + 抽象方法，单继承；
+interface：JDK7 只有抽象方法；JDK8 默认 / 静态方法；JDK9 私有方法；多实现，无构造、不能实例化。
+Java 只有值传递
+所有参数传递都是拷贝：基本传值副本，引用传地址副本，方法内改副本不影响原变量。
+try-catch-finally 有 return，finally 执行吗
+一定会执行，return 先把返回值存入临时变量，finally 执行完再返回；唯一不执行：System.exit(0)。
+static
+静态变量：类全局共享，类加载初始化；
+静态方法：只能访问静态成员，不能用 this/super；
+执行顺序：静态代码块→构造代码块→构造方法。
+深浅拷贝
+浅拷贝：复制对象，引用字段共用原对象地址；
+深拷贝：所有引用属性全部新建对象，完全独立；实现：Cloneable、序列化。
+重写 equals 必须重写 hashCode
+HashSet/HashMap 靠 hashCode 找桶、equals 判重；只重写 equals 会导致相同内容对象 hash 不同，存入不同位置。
+枚举 + 枚举单例
+枚举天然单例、线程安全、防反射破坏；枚举类不能 new，默认继承 Enum。
+可变参数 String...args
+底层是数组，只能放参数末尾，一个方法只能一个可变参数。
+二、集合（12 题）
+ArrayList、LinkedList
+ArrayList：数组，随机查找快 O (1)，中间增删慢 (移位)；
+LinkedList：双向链表，头尾增删快，随机查找慢 O (n)。
+ArrayList 扩容
+默认容量 10，扩容 1.5 倍 (old+old>>1)，先判断最小需要容量，不够扩容。
+HashMap(JDK8)
+数组 + 链表 + 红黑树；key.hashCode () 寻址；链表长度≥8 且数组长度≥64 转红黑树；红黑树≤6 退链表；扩容 2 倍。
+HashMap 用红黑树不用平衡二叉树
+平衡二叉树插入删除开销大；红黑树折中，平衡 + 插入效率，查询 O (logn)。
+HashMap 不安全、ConcurrentHashMap
+HashMap 并发扩容 / 插入会丢数据、死链；
+JDK8 CHM：数组元素加 synchronized+CAS 分段锁，锁头节点。
+HashSet 底层
+封装 HashMap，value 固定 Object，去重依托 HashMap key 去重。
+TreeMap、LinkedHashMap
+TreeMap：红黑树，key 自然排序 / 自定义 Comparator；
+LinkedHashMap：双向链表，插入有序，可实现 LRU 缓存。
+Vector vs ArrayList
+Vector 方法全 synchronized，线程安全、效率低，扩容 2 倍；ArrayList 无锁、1.5 倍扩容。
+fail-fast 快速失败
+迭代时集合结构被修改 (add/remove)，抛出 ConcurrentModificationException；ArrayList、HashMap 都触发。
+List/Set/Queue
+List 有序可重复；Set 无序不可重复；Queue 队列先进先出。
+负载因子 0.75
+平衡空间利用率与哈希冲突，0.7 冲突多，0.9 浪费空间。
+foreach 遍历不能删元素
+触发 fail-fast；要用迭代器 Iterator.remove ()。
+三、多线程（12 题）
+四种创建线程
+继承 Thread 类；实现 Runnable；Callable+FutureTask；线程池创建。
+start () 和 run ()
+start：申请内核资源、创建线程、调用 run；直接调用 run 只是普通方法，不新开线程。
+synchronized 底层
+基于对象头 MarkWord 监视器锁；分偏向锁→轻量级锁→重量级锁 (OS 互斥)。
+volatile
+保证可见性、禁止指令重排；不保证原子性，不能修饰方法。
+synchronized 和 Lock
+synchronized 自动释放锁、非公平、底层 JVM；Lock 手动 lock/unlock、可公平 / 非公平、可中断、可绑定多个条件。
+线程 5 状态
+新建→就绪→运行→阻塞→终止；阻塞：synchronized 阻塞；等待：wait ()/join ()。
+sleep() vs wait()
+sleep：Thread 方法，不释放锁，到时自动唤醒；
+wait：Object 方法，释放锁，需 notify/notifyAll 唤醒。
+线程池七大参数
+核心线程、最大线程、空闲时间、阻塞队列、拒绝策略、线程工厂；禁止 Executors，易 OOM，手动 ThreadPoolExecutor。
+CAS 与 ABA
+CAS：自旋乐观锁，比较并交换；ABA：中间值变回原值，用版本号 AtomicStampedReference 解决。
+悲观锁 / 乐观锁
+悲观锁：synchronized/Lock，上锁独占；乐观锁：CAS，不加锁、失败重试。
+CountDownLatch (计数器递减，等全部完成)、CyclicBarrier (集齐线程统一放行，可复用)。
+死锁四条件：互斥、持有并等待、不可剥夺、循环等待；破坏任一即可避免。
+四、JVM（8 题）
+JVM 五大内存区
+程序计数器 (唯一无 OOM)、虚拟机栈、本地方法栈、堆、方法区 (元空间 JDK8)。
+堆分区
+新生代 Eden:S0:S1=8:1:1；老年代存放长期存活对象。
+YGC/FGC
+YGC：Eden 满触发；FGC：老年代满、元空间满、System.gc 触发。
+存活判定
+引用计数 (循环引用缺陷)；可达性分析 (JVM 主流，GC Roots 向下追溯)。
+四种引用
+强：普通对象引用，永不回收；软：内存不足回收；弱：下次 GC 必回收；虚：回收通知，不能拿对象。
+CMS/G1
+CMS：并发低停顿，老年代收集，内存碎片；G1：分块 Region，可预测停顿。
+类加载：加载→验证→准备→解析→初始化；双亲委派：防止重复加载、安全防篡改。
+OOM 常见：堆溢出、元空间溢出、栈溢出、直接内存溢出。
+五、框架（3 题）
+IOC 控制反转：对象创建交给 Spring 容器；AOP 面向切面，动态代理实现统一日志 / 事务。
+Bean 生命周期：实例化→填充属性→初始化→销毁；作用域 singleton/prototype/request/session。
+#{} 预编译防 SQL 注入；${} 字符串拼接，存在注入风险。
