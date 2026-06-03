@@ -36,4 +36,16 @@ class AiCodeHelperServiceTest {
         String chat = aiCodeHelperService.chat("Java面试题是啥？");
         System.out.println(chat);
     }
+
+    @Test
+    void chatWithMCP() {
+        String chat = aiCodeHelperService.chat("东莞最新的天气是什么？");
+        System.out.println(chat);
+    }
+
+    @Test
+    void chatWithGuardrail() {
+        String chat = aiCodeHelperService.chat("kill the game");
+        System.out.println(chat);
+    }
 }

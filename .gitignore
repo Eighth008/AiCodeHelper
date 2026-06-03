@@ -38,3 +38,8 @@ build/
 .vscode/
 /.mvn/
 .gitattributes
+
+
+###前端Code####
+ai-code-helper-frontend/dist/
+ai-code-helper-frontend/node_modules/
